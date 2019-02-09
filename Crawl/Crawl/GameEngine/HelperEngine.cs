@@ -23,6 +23,21 @@ namespace Crawl.GameEngine
         {
             var myReturn = 0;
 
+            if (rolls < 1)
+            {
+                return 0;
+            }
+
+            if (dice < 1)
+            {
+                return 0;
+            }
+
+            if (Models.GameGlobals.ForceRollsToNotRandom)
+            {
+                return rolls * Models.GameGlobals.ForcedRandomValue;
+            }
+
             for (var i = 0; i < rolls; i++)
             {
                 // Add one to the dice, because random is between.  So 1-10 is rnd.Next(1,11)
@@ -32,15 +47,7 @@ namespace Crawl.GameEngine
             return myReturn;
         }
 
-        //if (rolls < 1)
-        //{
-        //    return 0;
-        //}
 
-        //if (dice < 1)
-        //{
-        //    return 0;
-        //}
 
         //if (GameGlobals.ForceRollsToNotRandom)
         //{

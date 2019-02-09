@@ -55,13 +55,37 @@ namespace Crawl.Models
         }
 
         // Upgrades to a set level
-        public void ScaleLevel(int level)
+        public bool ScaleLevel(int level)
         {
+
+            if(level < 1)
+            {
+                return false;
+            }
+
+            if(level > 20)
+            {
+                return false;
+            }
+
+            if(level < this.Level)
+            {
+                return false;
+            }
+
+            if(level == this.Level)
+            {
+                return false;
+            }
+
             // Calculate Experience Remaining based on Lookup...
             Level = level;
 
+
             Attribute.MaxHealth = HelperEngine.RollDice(Level, 10);
             Attribute.CurrentHealth = Attribute.MaxHealth;
+
+            return true;
         }
 
         // Update the character information
