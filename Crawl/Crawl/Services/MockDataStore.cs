@@ -35,26 +35,39 @@ namespace Crawl.Services
             InitilizeSeedData();
         }
 
-        private void InitilizeSeedData()
+        private async void InitilizeSeedData()
         {
 
             // Implement
 
             // Load Items.
-            _itemDataset.Add(new Item("Gold Sword", "Sword made of Gold, really expensive looking",
+            await AddAsync_Item(new Item("Mock Gold Sword", "Sword made of Gold, really expensive looking",
                 "http://www.clker.com/cliparts/e/L/A/m/I/c/sword-md.png", 0, 10, 10, ItemLocationEnum.PrimaryHand, AttributeEnum.Defense));
 
-            _itemDataset.Add(new Item("Strong Shield", "Enough to hide behind",
+            await AddAsync_Item(new Item("Mock Strong Shield", "Enough to hide behind",
                 "http://www.clipartbest.com/cliparts/4T9/LaR/4T9LaReTE.png", 0, 10, 0, ItemLocationEnum.OffHand, AttributeEnum.Attack));
 
-            _itemDataset.Add(new Item("Bunny Hat", "Pink hat with fluffy ears",
+            await AddAsync_Item(new Item("Mock Bunny Hat", "Pink hat with fluffy ears",
                 "http://www.clipartbest.com/cliparts/yik/e9k/yike9kMyT.png", 0, 10, -1, ItemLocationEnum.Head, AttributeEnum.Speed));
 
             // Implement Characters
+            await AddAsync_Character(new Character { Id = Guid.NewGuid().ToString(), Name = "Mock First Character", Description = "This is an Character description.", Level = 1 });
+            await AddAsync_Character(new Character { Id = Guid.NewGuid().ToString(), Name = "Mock Second Character", Description = "This is an Character description.", Level = 1 });
+            await AddAsync_Character(new Character { Id = Guid.NewGuid().ToString(), Name = "Mock Third Character", Description = "This is an Character description.", Level = 2 });
+            await AddAsync_Character(new Character { Id = Guid.NewGuid().ToString(), Name = "Mock Fourth Character", Description = "This is an Character description.", Level = 2 });
+            await AddAsync_Character(new Character { Id = Guid.NewGuid().ToString(), Name = "Mock Fifth Character", Description = "This is an Character description.", Level = 3 });
+            await AddAsync_Character(new Character { Id = Guid.NewGuid().ToString(), Name = "Mock Sixth Character", Description = "This is an Character description.", Level = 3 });
 
             // Implement Monsters
+            await AddAsync_Monster(new Monster { Id = Guid.NewGuid().ToString(), Name = "Mock First Monster", Description = "This is an Monster description." });
+            await AddAsync_Monster(new Monster { Id = Guid.NewGuid().ToString(), Name = "Mock Second Monster", Description = "This is an Monster description." });
+            await AddAsync_Monster(new Monster { Id = Guid.NewGuid().ToString(), Name = "Mock Third Monster", Description = "This is an Monster description." });
+            await AddAsync_Monster(new Monster { Id = Guid.NewGuid().ToString(), Name = "Mock Fourth Monster", Description = "This is an Monster description." });
+            await AddAsync_Monster(new Monster { Id = Guid.NewGuid().ToString(), Name = "Mock Fifth Monster", Description = "This is an Monster description." });
+            await AddAsync_Monster(new Monster { Id = Guid.NewGuid().ToString(), Name = "Mock Sixth Monster", Description = "This is an Monster description." });
 
             // Implement Scores
+
         }
 
         private void CreateTables()
@@ -65,7 +78,9 @@ namespace Crawl.Services
         // Delete the Datbase Tables by dropping them
         public void DeleteTables()
         {
-            // Implement
+            _characterDataset.Clear();
+            _itemDataset.Clear();
+            _monsterDataset.Clear();
         }
 
         // Tells the View Models to update themselves.
@@ -73,8 +88,10 @@ namespace Crawl.Services
         {
             ItemsViewModel.Instance.SetNeedsRefresh(true);
             // Implement Monsters
+            MonstersViewModel.Instance.SetNeedsRefresh(true);
 
             // Implement Characters 
+            CharactersViewModel.Instance.SetNeedsRefresh(true);
 
             // Implement Scores
         }
@@ -98,21 +115,6 @@ namespace Crawl.Services
         public async Task<bool> InsertUpdateAsync_Item(Item data)
         {
 
-            // Check to see if the item exist
-            var oldData = await GetAsync_Item(data.Id);
-            if (oldData == null)
-            {
-                _itemDataset.Add(data);
-                return true;
-            }
-
-            // Compare it, if different update in the DB
-            var UpdateResult = await UpdateAsync_Item(data);
-            if (UpdateResult)
-            {
-                await AddAsync_Item(data);
-                return true;
-            }
 
             return false;
         }
@@ -157,70 +159,141 @@ namespace Crawl.Services
 
         #endregion Item
 
-        #region Character
         // Character
         public async Task<bool> AddAsync_Character(Character data)
         {
-            // Implement
+            // Check to see if the item exist
+            var oldData = await GetAsync_Character(data.Id);
+            if (oldData == null)
+            {
+                _characterDataset.Add(data);
+                return true;
+            }
+
+            // Compare it, if different update in the DB
+            var UpdateResult = await UpdateAsync_Character(data);
+            if (UpdateResult)
+            {
+                await AddAsync_Character(data);
+                return true;
+            }
+
             return false;
         }
+        public async Task<bool> InsertUpdateAsync_Character(Character data)
+        {
 
+            // Check to see if the item exist
+            var oldData = await GetAsync_Character(data.Id);
+            if (oldData == null)
+            {
+                _characterDataset.Add(data);
+                return true;
+            }
+
+            // Compare it, if different update in the DB
+            var UpdateResult = await UpdateAsync_Character(data);
+            if (UpdateResult)
+            {
+                await AddAsync_Character(data);
+                return true;
+            }
+
+            return false;
+        }
         public async Task<bool> UpdateAsync_Character(Character data)
         {
-            // Implement
-            return false;
+            var myData = _characterDataset.FirstOrDefault(arg => arg.Id == data.Id);
+            if (myData == null)
+            {
+                return false;
+            }
+
+            myData.Update(data);
+
+            return await Task.FromResult(true);
         }
 
         public async Task<bool> DeleteAsync_Character(Character data)
         {
-            // Implement
-            return false;
+            var myData = _characterDataset.FirstOrDefault(arg => arg.Id == data.Id);
+            _characterDataset.Remove(myData);
+
+            return await Task.FromResult(true);
         }
 
         public async Task<Character> GetAsync_Character(string id)
         {
-            // Implement
-            return null;
+            return await Task.FromResult(_characterDataset.FirstOrDefault(s => s.Id == id));
         }
 
         public async Task<IEnumerable<Character>> GetAllAsync_Character(bool forceRefresh = false)
         {
-            // Implement
-            return null;
+            return await Task.FromResult(_characterDataset);
         }
+        //#endregion Character
 
-        #endregion Character
 
-        #region Monster
         //Monster
+        #region Monster
+
+
+        public async Task<bool> InsertUpdateAsync_Monster(Monster data)
+        {
+
+            // Check to see if the item exist
+            var oldData = await GetAsync_Monster(data.Id);
+            if (oldData == null)
+            {
+                _monsterDataset.Add(data);
+                return true;
+            }
+
+            // Compare it, if different update in the DB
+            var UpdateResult = await UpdateAsync_Monster(data);
+            if (UpdateResult)
+            {
+                await AddAsync_Monster(data);
+                return true;
+            }
+
+            return false;
+        }
         public async Task<bool> AddAsync_Monster(Monster data)
         {
-            // Implement
-            return false;
+            _monsterDataset.Add(data);
+            return await Task.FromResult(true);
         }
 
         public async Task<bool> UpdateAsync_Monster(Monster data)
         {
-            // Implement
-            return false;
+            var myData = _monsterDataset.FirstOrDefault(arg => arg.Id == data.Id);
+            if (myData == null)
+            {
+                return false;
+            }
+
+            myData.Update(data);
+
+            return await Task.FromResult(true);
         }
 
         public async Task<bool> DeleteAsync_Monster(Monster data)
         {
-            // Implement
-            return false;
+            var myData = _monsterDataset.FirstOrDefault(arg => arg.Id == data.Id);
+            _monsterDataset.Remove(myData);
+
+            return await Task.FromResult(true);
         }
 
         public async Task<Monster> GetAsync_Monster(string id)
         {
-            // Implement
-            return null;
+            return await Task.FromResult(_monsterDataset.FirstOrDefault(s => s.Id == id));
         }
 
         public async Task<IEnumerable<Monster>> GetAllAsync_Monster(bool forceRefresh = false)
         {
-            // Implement
-            return null;
+            return await Task.FromResult(_monsterDataset);
         }
 
         #endregion Monster
