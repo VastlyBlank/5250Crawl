@@ -216,6 +216,7 @@ namespace Crawl.ViewModels
             }
 
             Item myData = DataStore.GetAsync_Item(ItemID).GetAwaiter().GetResult();
+
             if (myData == null)
             {
                 return null;

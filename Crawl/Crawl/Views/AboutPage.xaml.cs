@@ -165,6 +165,9 @@ namespace Crawl.Views
             if (answer)
             {
                 // Call to the Item Service and have it Get the Items
+                var value = Convert.ToInt32(ServerItemValue.Text);
+                myDataList = await ItemsController.Instance.GetItemsFromServer(value);
+
                 // The ServerItemValue Code stands for the batch of items to get
                 // as the group to request.  1, 2, 3, 100 (All), or if not specified All
 
@@ -180,7 +183,7 @@ namespace Crawl.Views
                     {
                         // Add them line by one, use \n to force new line for output display.
                         // Build up the output string by adding formatted Item Output
-                        myOutput += "//implement call item formatter" + "\n";
+                        myOutput += item.FormatOutput() + "\n\n";
                     }
                 }
 

@@ -124,21 +124,48 @@ namespace Crawl.Services
 
         public async Task<bool> InsertUpdateAsync_Item(Item data)
         {
-            // Implement
+            var old = await GetAsync_Item(data.Id);
+
+            if(old == null)
+            {
+                await AddAsync_Item(data);
+                return true;
+            }
+
+            var update = await UpdateAsync_Item(data);
+
+            if (update)
+            {
+                await UpdateAsync_Item(data);
+                return true;
+            }
 
             return false;
-        }
 
+        }
+    
+        // Add Item to database
         public async Task<bool> AddAsync_Item(Item data)
         {
-            // Implement
+            var result = await App.Database.InsertAsync(data);
+
+            if (result == 1)
+            {
+                return true;
+            }
 
             return false;
         }
 
+        // Update existing Item in database
         public async Task<bool> UpdateAsync_Item(Item data)
         {
-            // Implement
+            var result = await App.Database.UpdateAsync(data);
+
+            if (result == 1)
+            {
+                return true;
+            }
 
             return false;
         }
@@ -150,16 +177,32 @@ namespace Crawl.Services
             return false;
         }
 
+        // Get Item data
         public async Task<Item> GetAsync_Item(string id)
         {
-            // Implement
+            try
+            {
+                var result = await App.Database.GetAsync<Item>(id); return result;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
             return null;
         }
 
+        //Get all items
         public async Task<IEnumerable<Item>> GetAllAsync_Item(bool forceRefresh = false)
         {
-            // Implement
-            return null;
+            var tempResult = await App.Database.Table<Item>().ToListAsync();
+
+            var result = new List<Item>();
+            foreach (var item in tempResult)
+            {
+                result.Add(new Item(item));
+            }
+
+            return result;
         }
         #endregion Item
 

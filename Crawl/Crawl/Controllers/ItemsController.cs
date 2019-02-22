@@ -43,12 +43,13 @@ namespace Crawl.Controllers
 
             // Needs to get items from the server
 
-            var URLComponent = "XYZ/";
+            var URLComponent = "GetItemList/";
 
             var DataResult = await HttpClientService.Instance.GetJsonGetAsync(WebGlobals.WebSiteAPIURL + URLComponent + parameter);
 
             // Parse them
             var myList = ParseJson(DataResult);
+
             if (myList == null)
             {
                 // Error, no results
@@ -59,10 +60,18 @@ namespace Crawl.Controllers
 
             // Use a foreach on myList
 
+            // For each item pulled from item site, try to add them to item lest.
+            foreach(Item item in myList)
+            {
+                await SQLDataStore.Instance.InsertUpdateAsync_Item(item);
+
+            }
             // Implement
 
             // When foreach is done, call to the items view model to set needs refresh to true, so it can refetch the list...
             // Implement
+            // Tell item viewmodel to refresh with new or updated items.
+            ItemsViewModel.Instance.SetNeedsRefresh(true);
 
             return myList;
         }
@@ -91,6 +100,9 @@ namespace Crawl.Controllers
             {
                 { "Number", number.ToString()},
                 { "Attribute", ((int)attribute).ToString()},
+                { "Level", level.ToString() },
+                { "Location", ((int)location).ToString() },
+                { "Random", random.ToString() }
                 // Implement missing paramaters...
 
             };
@@ -103,6 +115,7 @@ namespace Crawl.Controllers
 
             // Parse them
             var myList = ParseJson(DataResult);
+
             if (myList == null)
             {
                 // Error, no results, return empty list.
@@ -118,10 +131,13 @@ namespace Crawl.Controllers
                     // Call to the View Model (that is where the datasource is set, and have it then save
                     // await abcdefg;
                     // Implement
+                    await ItemsViewModel.Instance.InsertUpdateAsync(item);
+
                 }
 
                 // When foreach is done, call to the items view model to set needs refresh to true, so it can refetch the list...
                 // Implement
+                ItemsViewModel.Instance.SetNeedsRefresh(true);
             }
 
             return myList;
@@ -136,6 +152,7 @@ namespace Crawl.Controllers
             try
             {
                 JObject json;
+
                 json = JObject.Parse(myJsonData);
 
                 // Data is a List of Items, so need to pull them out one by one...
@@ -145,6 +162,7 @@ namespace Crawl.Controllers
                 foreach (var myItem in myTempList)
                 {
                     var myTempObject = ConvertFromJson(myItem);
+
                     if (myTempObject != null)
                     {
                         myData.Add(myTempObject);
@@ -169,6 +187,15 @@ namespace Crawl.Controllers
             {
                 myData.Guid = JsonHelper.GetJsonString(json, "Guid");
                 myData.Id = myData.Guid;    // Set to be the same as Guid, does not come down from server, but needed for DB
+                myData.Name = JsonHelper.GetJsonString(json, "Name");
+                myData.Description = JsonHelper.GetJsonString(json, "Description");
+                myData.ImageURI = JsonHelper.GetJsonString(json, "ImageURI");
+                
+                myData.Value = JsonHelper.GetJsonInteger(json, "Value");
+                myData.Range = JsonHelper.GetJsonInteger(json, "Range");
+
+                myData.Location = (ItemLocationEnum)JsonHelper.GetJsonInteger(json, "Location");
+                myData.Attribute = (AttributeEnum)JsonHelper.GetJsonInteger(json, "Attribute");
 
                 // Look in JsonHelper for more types...
 
