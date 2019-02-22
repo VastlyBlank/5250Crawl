@@ -107,7 +107,7 @@ namespace Crawl.Models
                 return;
             }
 
-            // Update all the fields in the Data, except for the Id and guid
+            // Update all the fields in the Data
             Name = newData.Name;
             Description = newData.Description;
             Value = newData.Value;
@@ -118,6 +118,8 @@ namespace Crawl.Models
             ImageURI = newData.ImageURI;
             Range = newData.Range;
             Damage = newData.Damage;
+            Id = newData.Id;
+            Guid = newData.Guid;
         }
 
         // Will update the Item to be stronger...
