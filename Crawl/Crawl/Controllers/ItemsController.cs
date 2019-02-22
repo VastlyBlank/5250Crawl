@@ -64,6 +64,7 @@ namespace Crawl.Controllers
             foreach(Item item in myList)
             {
                 await SQLDataStore.Instance.InsertUpdateAsync_Item(item);
+                await MockDataStore.Instance.InsertUpdateAsync_Item(item);
 
             }
             // Implement

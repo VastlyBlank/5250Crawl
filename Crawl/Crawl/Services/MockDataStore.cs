@@ -114,6 +114,21 @@ namespace Crawl.Services
         // Item
         public async Task<bool> InsertUpdateAsync_Item(Item data)
         {
+            var old = await GetAsync_Item(data.Id);
+
+            if (old == null)
+            {
+                await AddAsync_Item(data);
+                return true;
+            }
+
+            var update = await UpdateAsync_Item(data);
+
+            if (update)
+            {
+                await UpdateAsync_Item(data);
+                return true;
+            }
 
 
             return false;
