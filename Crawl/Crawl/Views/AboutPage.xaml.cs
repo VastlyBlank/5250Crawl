@@ -197,10 +197,10 @@ namespace Crawl.Views
             var myDataList = new List<Item>();
 
             var number = Convert.ToInt32(ServerItemValue.Text);
-            var level = 6;  // Max Value of 6
-            var attribute = AttributeEnum.Unknown;  // Any Attribute
-            var location = ItemLocationEnum.Unknown;    // Any Location
-            var random = true;  // Random between 1 and Level
+            var level = 10;  // Max Value of 6
+            var attribute = AttributeEnum.Speed;  // Any Attribute
+            var location = ItemLocationEnum.Feet;    // Any Location
+            var random = false;  // Random between 1 and Level
             var updateDataBase = true;  // Add them to the DB
 
             // will return shoes value 10 of speed.
@@ -209,15 +209,20 @@ namespace Crawl.Views
 
             // Implement calling GetItemsFromGame into myDataList.  Remember to Await the call.
 
+            myDataList = await ItemsController.Instance.GetItemsFromGame(number, level, attribute, location, random, updateDataBase);
+
+            await DisplayAlert("Item Count", myDataList.Count.ToString(), "OK");
+
+
             if (myDataList != null && myDataList.Count > 0)
             {
                 // Reset the output
-                myOutput = "";
+                myOutput = myDataList.Count.ToString();
 
                 foreach (var item in myDataList)
                 {
                     // Add them line by one, use \n to force new line for output display.
-                    myOutput += item.FormatOutput() + "\n";
+                    myOutput += item.FormatOutput() + "\n\n";
                 }
             }
 

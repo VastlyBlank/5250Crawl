@@ -94,7 +94,7 @@ namespace Crawl.Controllers
 
             // Needs to get items from the server
 
-            var URLComponent = "GetItemListPost/";
+            var URLComponent = "GetItemList/";
 
 
             var dict = new Dictionary<string, string>
